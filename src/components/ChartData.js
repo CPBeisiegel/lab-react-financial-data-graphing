@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import Chart from 'chart.js/auto';
-
+import {FilterData} from './FilterData'
 
 
 export function ChartData(){
@@ -16,7 +16,7 @@ useEffect(() => {
     if(data !== null){
         setLink(`https://api.coindesk.com/v1/bpi/historical/close.json?start=${data.from}&end=${data.to}`)
     }
-})
+},[data])
        
         
 useEffect(() => {
@@ -43,6 +43,10 @@ useEffect(() => {
             function createChart() {
                 const ctx = document.getElementById("myCanvas").getContext("2d");
 
+                if (chart) {
+                    chart.destroy();
+                  }
+
                 const myChart = new Chart(ctx,{
                     type: 'line',
                     data:{
@@ -50,9 +54,8 @@ useEffect(() => {
                         datasets: [{
                           label: 'Preço Bitcoin',
                           data: Object.values(coins),
-                          fill: true,
                           borderColor: 'rgb(75, 192, 192)',
-                          tension: 0.1
+                          tension: 0.2
                         }]
                       }
                 })
@@ -64,14 +67,15 @@ useEffect(() => {
 
 
   
- }, [loading, setCoins])
+ }, [loading, coins])
 
 
    
 
 return (
     <div>
-        <canvas id="myChart" width="400" height="400"></canvas>
+         <FilterData setData={setData} />
+        <div>{loading ? "Carregando..." : <canvas id="myCanvas" />}</div>
     </div>
 )
 }
